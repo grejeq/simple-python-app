@@ -56,11 +56,17 @@ pipeline {
             }
         }
         
-        stage('Approve Production') {
+stage('Approve Production') {
             when { expression { params.ENVIRONMENT == 'production' } }
             steps {
-                input message: "Подтвердите развертывание в PRODUCTION?", ok: "Да, развернуть",
-                      parameters:[string(name: 'PROD_VERSION', defaultValue: "v1.0.${BUILD_NUMBER}")]
+                script {
+                    // Сохраняем введенное в окошке значение напрямую в переменную окружения
+                    env.PROD_VERSION = input(
+                        message: "Подтвердите развертывание в PRODUCTION?", 
+                        ok: "Да, развернуть",
+                        parameters:[string(name: 'PROD_VERSION', defaultValue: "v1.0.${BUILD_NUMBER}")]
+                    )
+                }
             }
         }
 
@@ -68,16 +74,16 @@ pipeline {
             when { expression { params.ENVIRONMENT == 'production' } }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'github-credentials', passwordVariable: 'GIT_PASS', usernameVariable: 'GIT_USER')]) {
-                    sh """
+                    // Используем одинарные кавычки (''') — это уберет желтое предупреждение безопасности
+                    sh '''
                         git config user.email "jenkins@ci.com"
                         git config user.name "Jenkins CI"
-                        git tag -a \${PROD_VERSION} -m "Release \${PROD_VERSION}"
-                        git push https://${GIT_USER}:${GIT_PASS}@github.com/${GIT_USER}/simple-python-app.git \${PROD_VERSION}
-                    """
+                        git tag -a "$PROD_VERSION" -m "Release $PROD_VERSION"
+                        git push "https://$GIT_USER:$GIT_PASS@github.com/Baragor63/simple-python-app.git" "$PROD_VERSION"
+                    '''
                 }
             }
-        }
-        
+        }        
         stage('Deploy to Production') {
             when { expression { params.ENVIRONMENT == 'production' } }
             steps {
@@ -87,16 +93,28 @@ pipeline {
         }
     }
     
-    post {
-        always {
-            cleanWs()
-        }
-        success {
-            echo " Пайплайн успешно выполнен для окружения ${params.ENVIRONMENT}!"
-            
-        }
-        failure {
-            echo " Ошибка пайплайна!"
-        }
+post {
+    always {
+        cleanWs()
     }
-}
+    success {
+        emailext(
+            to: 'vasilyeuryhor@gmail.com', // <-- ЗАМЕНИТЕ НА СВОЮ ПОЧТУ
+            subject: " УСПЕХ: Pipeline ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+            body: """
+            <p>Сборка #${env.BUILD_NUMBER} успешно завершена и развернута в окружении <b>${params.ENVIRONMENT}</b>.</p>
+            <p>Проверить логи можно по ссылке: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+            """
+        )
+    }
+    failure {
+        emailext(
+            to: 'vasilyeuryhor@gmail.com', 
+            subject: " ОШИБКА: Pipeline ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+            body: """
+            <p>Сборка #${env.BUILD_NUMBER} завершилась с ошибкой.</p>
+            <p><b>Обязательно проверьте консольный вывод:</b> <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
+            """
+        )
+    }
+}}
