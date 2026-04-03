@@ -79,7 +79,7 @@ stage('Approve Production') {
                         git config user.email "jenkins@ci.com"
                         git config user.name "Jenkins CI"
                         git tag -a "$PROD_VERSION" -m "Release $PROD_VERSION"
-                        git push "https://$GIT_USER:$GIT_PASS@github.com/Baragor63/simple-python-app.git" "$PROD_VERSION"
+                        git push "https://$GIT_USER:$GIT_PASS@github.com/grejeq/simple-python-app.git" "$PROD_VERSION"
                     '''
                 }
             }
