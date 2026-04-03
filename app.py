@@ -6,7 +6,7 @@ app = Flask(__name__)
 @app.route('/')
 def hello():
     student = os.environ.get('STUDENT_NAME', 'Student')
-    return f"<h1>Hi from Jenkins CI/CD Pipeline!</h1><p>Student: {student}</p><p>Host: {socket.gethostname()}</p>"
+    return f"<h1>Hello from Jenkins CI/CD Pipeline!</h1><p>Student: {student}</p><p>Host: {socket.gethostname()}</p>"
 
 @app.route('/health')
 def health():
