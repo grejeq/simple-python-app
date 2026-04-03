@@ -100,7 +100,7 @@ post {
     success {
         emailext(
             to: 'vasilyeuryhor@gmail.com', // <-- ЗАМЕНИТЕ НА СВОЮ ПОЧТУ
-            subject: " УСПЕХ: Pipeline ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
+            subject: " Успех: Pipeline ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
             body: """
             <p>Сборка #${env.BUILD_NUMBER} успешно завершена и развернута в окружении <b>${params.ENVIRONMENT}</b>.</p>
             <p>Проверить логи можно по ссылке: <a href="${env.BUILD_URL}">${env.BUILD_URL}</a></p>
