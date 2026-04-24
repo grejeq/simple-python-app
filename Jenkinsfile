@@ -99,7 +99,7 @@ post {
     }
     success {
         emailext(
-            to: 'shop.corp00@gmail.com', // <-- ЗАМЕНИТЕ НА СВОЮ ПОЧТУ
+            to: 'car.edits76765@gmail.com', // <-- ЗАМЕНИТЕ НА СВОЮ ПОЧТУ
             subject: " Успех: Pipeline ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
             body: """
             <p>Сборка #${env.BUILD_NUMBER} успешно завершена и развернута в окружении <b>${params.ENVIRONMENT}</b>.</p>
@@ -109,7 +109,7 @@ post {
     }
     failure {
         emailext(
-            to: 'shop.corp00@gmail.com', 
+            to: 'car.edits76765@gmail.com', 
             subject: " ОШИБКА: Pipeline ${env.JOB_NAME} [${env.BUILD_NUMBER}]",
             body: """
             <p>Сборка #${env.BUILD_NUMBER} завершилась с ошибкой.</p>
